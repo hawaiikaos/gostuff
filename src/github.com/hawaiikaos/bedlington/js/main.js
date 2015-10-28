@@ -1,5 +1,54 @@
 console.log("in main.js");
 
+//var boundsCollection = new Object();
+boundsCollection = [];
+ 
+function reverseGeocode(lat,long) {
+    address = "United States";
+    //$.getJSON( "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+long+"&key=AIzaSyAhPI53u5k-IJ80w1ISj_7QZdxKhQiCpTw",
+    $.getJSON( "https://maps.googleapis.com/maps/api/geocode/json?address="+address+"&key=AIzaSyAhPI53u5k-IJ80w1ISj_7QZdxKhQiCpTw",
+     function( data ) {
+         $.each( data, function( key, val ) {
+             console.log(key, ": ", val);
+             /*for (i = 0; i < val.length; i++){
+                 console.log(val[i].address_components);
+                 for (j = 0; j < val[i].address_components.length; j++) {
+                     console.log(val[i].address_components[j].types[0]);
+                     console.log(val[i].address_components[j].long_name);
+                 }
+             }*/
+         });
+     });
+}
+
+function boundViewer(entity) {
+    var bounds = new Object();
+    $.getJSON( "https://maps.googleapis.com/maps/api/geocode/json?address="+entity+"&key=AIzaSyAhPI53u5k-IJ80w1ISj_7QZdxKhQiCpTw",
+     function( data ) {
+         $.each( data, function( key, val ) {
+             console.log(key, ": ", val);
+             try {
+                 console.log(val[0].geometry.bounds);
+                 //bounds.push(entity);
+                 //bounds.push(val[0].geometry.bounds);
+                 bounds.bounds = val[0].geometry.bounds;
+                 bounds.region_name = entity;
+             } catch (e) {
+                 //ignore
+             }
+             
+             /*for (i = 0; i < val.length; i++){
+                 console.log(val[i].address_components);
+                 for (j = 0; j < val[i].address_components.length; j++) {
+                     console.log(val[i].address_components[j].types[0]);
+                     console.log(val[i].address_components[j].long_name);
+                 }
+             }*/
+         });
+     });
+     return bounds;
+}
+
 function findHemisphere(lat,long) {
     var hemisphere = [2];
     if (lat > 0) {
@@ -100,7 +149,9 @@ function geoFind() {
         
         var hemisphere = findHemisphere(position.coords.latitude, position.coords.longitude);
         output.innerHTML = 'Lat: ' + latitude + '<br>' + 'Lon: ' + longitude + '<br>' + hemisphere[0] + '<br>' + hemisphere[1];
-        getCountry();
+        //getCountry();
+        //reverseGeocode(latitude,longitude);
+        //reverseGeocode(51.52,-100.42);
     };
     
     function error() {
@@ -110,4 +161,12 @@ function geoFind() {
     output.innerHTML = "Locating...";
     
     navigator.geolocation.getCurrentPosition(success, error);
+    
+    boundsCollection.push(boundViewer("England"));
+    boundsCollection.push(boundViewer("Wales"));
+    
+}
+
+function downloadBounds() {
+    console.log(boundsCollection);
 }
