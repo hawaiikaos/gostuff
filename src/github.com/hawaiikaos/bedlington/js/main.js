@@ -164,9 +164,28 @@ function geoFind() {
     
     boundsCollection.push(boundViewer("England"));
     boundsCollection.push(boundViewer("Wales"));
-    
 }
 
 function downloadBounds() {
     console.log(boundsCollection);
+    //var csvContent = "";
+    var datastring = "data:text/csv;charset=utf-8,";
+    //boundsCollection.forEach(function(infoArray, index) {
+        /*try {
+            dataString = infoArray.join(",");
+            csvContent += index < boundsCollection.length ? dataString+ "\n" : dataString;
+        } catch (e) {
+            //
+        }*/
+    //});
+    
+    for (i = 0; i < boundsCollection.length; i++) {
+        console.log(boundsCollection[i]);
+        datastring += boundsCollection[i].region_name;
+        var itemBounds = boundsCollection[i].bounds;
+        datastring += "," + itemBounds.northeast.lat + "," + itemBounds.northeast.lng;
+        datastring += "," + itemBounds.southwest.lat + "," + itemBounds.southwest.lng + "\n";
+    }
+    var encodedUri = encodeURI(datastring);
+    window.open(encodedUri);
 }
