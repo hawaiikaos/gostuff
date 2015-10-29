@@ -2,6 +2,15 @@ console.log("in main.js");
 
 //var boundsCollection = new Object();
 boundsCollection = [];
+regions = [];
+
+function readTextToArray(filename) {
+    console.log("in readTextToArray");
+    var output = [];
+    $.get(filename, function(data) {
+        regions = data.split('\n');
+    });
+}
  
 function reverseGeocode(lat,long) {
     address = "United States";
@@ -22,6 +31,7 @@ function reverseGeocode(lat,long) {
 }
 
 function boundViewer(entity) {
+    console.log("in boundViewer with: ", entity);
     var bounds = new Object();
     $.getJSON( "https://maps.googleapis.com/maps/api/geocode/json?address="+entity+"&key=AIzaSyAhPI53u5k-IJ80w1ISj_7QZdxKhQiCpTw",
      function( data ) {
@@ -136,6 +146,7 @@ function getCountry() {
 }
 
 function geoFind() {
+    
     var output = document.getElementById("output");
     
     if (!navigator.geolocation) {
@@ -162,8 +173,19 @@ function geoFind() {
     
     navigator.geolocation.getCurrentPosition(success, error);
     
-    boundsCollection.push(boundViewer("England"));
-    boundsCollection.push(boundViewer("Wales"));
+    //regions.push(readTextToArray("/js/regions.txt"));
+    console.log("regions: ", readTextToArray("/js/regions.txt"));
+    $("#load").show();
+}
+
+function loadRegions() {
+    //console.log(regions);
+    console.log(regions.length);
+    for (i = 0; i < regions.length; i++) {
+        console.log(regions[i]);
+        boundsCollection.push(boundViewer(regions[i]));
+    }
+    $("#download").show();
 }
 
 function downloadBounds() {
@@ -181,10 +203,14 @@ function downloadBounds() {
     
     for (i = 0; i < boundsCollection.length; i++) {
         console.log(boundsCollection[i]);
-        datastring += boundsCollection[i].region_name;
-        var itemBounds = boundsCollection[i].bounds;
-        datastring += "," + itemBounds.northeast.lat + "," + itemBounds.northeast.lng;
-        datastring += "," + itemBounds.southwest.lat + "," + itemBounds.southwest.lng + "\n";
+        try {
+            datastring += boundsCollection[i].region_name;
+            var itemBounds = boundsCollection[i].bounds;
+            datastring += "," + itemBounds.northeast.lat + "," + itemBounds.northeast.lng;
+            datastring += "," + itemBounds.southwest.lat + "," + itemBounds.southwest.lng + "\n";
+        } catch(e) {
+            //
+        }
     }
     var encodedUri = encodeURI(datastring);
     window.open(encodedUri);
