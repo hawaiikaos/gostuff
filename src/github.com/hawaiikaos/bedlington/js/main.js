@@ -31,6 +31,7 @@ function reverseGeocode(lat,long) {
 }
 
 function boundViewer(entity) {
+    setTimeout(function(){
     console.log("in boundViewer with: ", entity);
     var bounds = new Object();
     $.getJSON( "https://maps.googleapis.com/maps/api/geocode/json?address="+entity+"&key=AIzaSyAhPI53u5k-IJ80w1ISj_7QZdxKhQiCpTw",
@@ -57,6 +58,8 @@ function boundViewer(entity) {
          });
      });
      return bounds;
+    }, 1500);
+     
 }
 
 function findHemisphere(lat,long) {
@@ -183,7 +186,9 @@ function loadRegions() {
     console.log(regions.length);
     for (i = 0; i < regions.length; i++) {
         console.log(regions[i]);
-        boundsCollection.push(boundViewer(regions[i]));
+        
+            boundsCollection.push(boundViewer(regions[i]));
+        
     }
     $("#download").show();
 }
